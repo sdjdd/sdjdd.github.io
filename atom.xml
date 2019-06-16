@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://blog.sdjdd.com/"/>
-  <updated>2019-06-15T16:52:23.957Z</updated>
+  <updated>2019-06-16T16:53:59.849Z</updated>
   <id>https://blog.sdjdd.com/</id>
   
   <author>
@@ -17,23 +17,28 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>Hello World</title>
-    <link href="https://blog.sdjdd.com/2019/06/16/hello-world/"/>
-    <id>https://blog.sdjdd.com/2019/06/16/hello-world/</id>
-    <published>2019-06-15T16:52:23.957Z</published>
-    <updated>2019-06-15T16:52:23.957Z</updated>
+    <title>JSON 配置文件的缺点</title>
+    <link href="https://blog.sdjdd.com/2019/06/16/JSON-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E7%BC%BA%E7%82%B9/"/>
+    <id>https://blog.sdjdd.com/2019/06/16/JSON-配置文件的缺点/</id>
+    <published>2019-06-16T05:11:46.000Z</published>
+    <updated>2019-06-16T16:53:59.849Z</updated>
     
-    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>]]></content>
+    <content type="html"><![CDATA[<blockquote><p>原文链接：<a href="https://arp242.net/json-config.html" target="_blank" rel="noopener">The downsides of JSON for config files</a></p></blockquote><p>我近期目睹了使用 JSON 作为配置文件的趋势，我认为这不是一个好主意。</p><p>这不是 JSON 的设计目的，因此它不擅长做这件事。JSON 旨在成为一种“轻量数据交换格式”，并声称其“易于人类读写”和“易于机器解析和生成”。</p><p>作为一种数据交换格式，JSON 相当不错。人类可以相对容易地读写它，而且机器解析起来也很容易（尽管存在<a href="http://seriot.ch/parsing_json.php" target="_blank" rel="noopener">一些问题</a>）。</p><p>这是一个良好的在机器可读和人类可读之间的权衡，对于许多用例来说，这是对 XML 的一个很好的改进。</p><p>将其用于其它目的有些类似于：“嘿，这把锤子非常适合用来钉钉子！我很中意它！为什么不用它来敲这颗螺丝呢！”。当然，这么做也可以，但它不是正确的工具。</p><hr><p>截止到目前，最大的问题是你无法添加注释。少数 JSON 解析器可以，但大多数都不支持，它也不在标准中。有充分的理由关于<a href="https://web.archive.org/web/20120506232618/https://plus.google.com/118095276221607585885/posts/RK8qyGVaGSr" target="_blank" rel="noopener">明确从 JSON 中移除</a>注释。</p><p>你想要添加注释的原因有很多：记录为什么设置成该值，添加助记符或描述警告，警告过去的配置错误，在其中保留一个基本的更改日志，或者单纯是为了在调试时注释掉某个段落或值。</p><p>一个<a href="http://stackoverflow.com/a/244858/660921" target="_blank" rel="noopener">变通方法</a>是添加一个新的键（如 <code>{&quot;__comment&quot;: &quot;a comment&quot;, &quot;actual_data&quot;: &quot;...&quot;}</code>，但我觉得这实在是太难看了)。</p><p>你也可以使用提交日志，但是谁会在提交历史中不大可能隐藏一些重要信息的情况下去仔细阅读它呢？</p><p>一些 JSON 方言例如 JSON5，Hjson 和 HOCON 添加了对注释的支持，一些 JSON 解析器也是如此。这很好，我也鼓励你去使用它，但这不再是 JSON 了，而是 JSON 方言。这篇文章是关于 JSON 的，不是它的方言。</p><hr><p>我还发现在手动编辑 JSON 时的体验很不理想，你需要频繁的追加逗号，引号的语义非常烦人，而且它缺乏使用多行字符串的能力。这些属性适用于 JSON 的预期用途，但不太适合编写配置文件。它可行吗？当然。有趣吗？不。</p><p>我也没觉得它特别易读，因为它包含过多的引号和其它语法噪音。我坦率承认这可能是我的品位问题。</p><hr><p>JSON 是一种声明性配置语言。声明性配置（DC）适用于某些问题，但其它问题就不那么适用了。尤其是使用 DC 来控制逻辑，通常不是个好主意。</p><p>促使我写这篇文章的是 MediaWiki 的新扩展系统，旧系统使用一个简单的 PHP 文件来连接核心 MediaWiki 代码，加载所需依赖等。这些在新系统中被一个 JSON 文件替换。丧失了巧妙解决与其它插件或逻辑的兼容问题的能力。</p><p>它实现起来也很复杂，以前只需要 <code>require(&#39;plugin/foo/plugin.php&#39;);</code>，现在它需要解析一个 JSON 文件，并根据其内容做些什么。这要复杂得多，因此也<a href="https://arp242.net/easy.html" target="_blank" rel="noopener">难以测试</a>。</p><p>而使用 JSON 文件存储基本的元数据是有意义的（更容易在网站上解析和显示），用它来描述代码的工作方式对于我来说是对 DC 的滥用。毕竟这是代码的活儿。</p><hr><p>很多人向我征求关于使用什么的建议。这不是个容易回答的问题，因为它取决于你的用例，编程语言，库环境和社会因素。没有单一的“正确答案”，也许只有“最简单的，满足你所有需求”的答案。事实上我写了<a href="https://arp242.net/negative-argument.html" target="_blank" rel="noopener">一篇关于这一点的文章</a>。</p><p>一个很好的选项可能是只<a href="https://arp242.net/flags-config.html" target="_blank" rel="noopener">使用命令行标志</a>。</p><p>有一些 JSON 方言专为人类编写而设计：<a href="https://json5.org/" target="_blank" rel="noopener">JSON5</a>，<a href="http://hjson.org/" target="_blank" rel="noopener">Hjson</a> 和 <a href="https://github.com/lightbend/config/blob/master/HOCON.md" target="_blank" rel="noopener">HOCON</a>。所有这些似乎都是对标准 JSON 的合理改进，尽管我没有用过它们中的任何一个。特别是 JSON5 似乎是个不错的选项，因为它对 JSON 的改动最少。</p><p>我不愿提供其它选项，因为我没有对所有格式（ <a href="https://arp242.net/yaml-config.html" target="_blank" rel="noopener">YAML</a> 除外）进行深入评估；只是看看规范可能无法找出潜在的缺点（ YAML 就是个很好的例子，它有很多微妙的行为）。我确实没有时间或是兴趣去对所有选项做全面深入的审查。</p>]]></content>
     
     <summary type="html">
     
       
       
-        &lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.
+        &lt;blockquote&gt;
+&lt;p&gt;原文链接：&lt;a href=&quot;https://arp242.net/json-config.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;The downsides of JSON for config files&lt;/a&gt;
       
     
     </summary>
     
+      <category term="翻译" scheme="https://blog.sdjdd.com/categories/%E7%BF%BB%E8%AF%91/"/>
+    
+    
+      <category term="JSON" scheme="https://blog.sdjdd.com/tags/JSON/"/>
     
   </entry>
   

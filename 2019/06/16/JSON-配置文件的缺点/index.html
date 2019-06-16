@@ -17,17 +17,21 @@
   <meta http-equiv="window-target" content="_top">
   
   
-  <title>404 Not Found：该页无法显示 | sdjdd&#39;s blog</title>
-  <meta property="og:type" content="website">
-<meta property="og:title" content="404 Not Found：该页无法显示">
-<meta property="og:url" content="https://blog.sdjdd.com/404.html">
+  <title>JSON 配置文件的缺点 | sdjdd&#39;s blog</title>
+  <meta name="description" content="原文链接：The downsides of JSON for config files  我近期目睹了使用 JSON 作为配置文件的趋势，我认为这不是一个好主意。 这不是 JSON 的设计目的，因此它不擅长做这件事。JSON 旨在成为一种“轻量数据交换格式”，并声称其“易于人类读写”和“易于机器解析和生成”。 作为一种数据交换格式，JSON 相当不错。人类可以相对容易地读写它，而且机器解析起来也">
+<meta name="keywords" content="JSON">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JSON 配置文件的缺点">
+<meta property="og:url" content="https://blog.sdjdd.com/2019/06/16/JSON-配置文件的缺点/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="原文链接：The downsides of JSON for config files  我近期目睹了使用 JSON 作为配置文件的趋势，我认为这不是一个好主意。 这不是 JSON 的设计目的，因此它不擅长做这件事。JSON 旨在成为一种“轻量数据交换格式”，并声称其“易于人类读写”和“易于机器解析和生成”。 作为一种数据交换格式，JSON 相当不错。人类可以相对容易地读写它，而且机器解析起来也">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-06-15T16:52:23.956Z">
+<meta property="og:updated_time" content="2019-06-16T16:53:59.849Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="404 Not Found：该页无法显示">
+<meta name="twitter:title" content="JSON 配置文件的缺点">
+<meta name="twitter:description" content="原文链接：The downsides of JSON for config files  我近期目睹了使用 JSON 作为配置文件的趋势，我认为这不是一个好主意。 这不是 JSON 的设计目的，因此它不擅长做这件事。JSON 旨在成为一种“轻量数据交换格式”，并声称其“易于人类读写”和“易于机器解析和生成”。 作为一种数据交换格式，JSON 相当不错。人类可以相对容易地读写它，而且机器解析起来也">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://blog.sdjdd.com/404.html">
+  <link rel="canonical" href="https://blog.sdjdd.com/2019/06/16/JSON-配置文件的缺点/index.html">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -246,14 +250,14 @@
   
 <main class="main" role="main">
   <div class="content">
-  <article id="page-" class="article article-type-page" itemscope itemtype="http://schema.org/BlogPosting">
+  <article id="post-JSON-配置文件的缺点" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
     
     <div class="article-header">
       
         
   
     <h1 class="article-title" itemprop="name">
-      404 Not Found：该页无法显示
+      JSON 配置文件的缺点
     </h1>
   
 
@@ -261,22 +265,58 @@
       <div class="article-meta">
         <span class="article-date">
     <i class="icon icon-calendar-check"></i>
-	<a href="/404.html" class="article-date">
-	  <time datetime="2019-06-15T16:52:23.956Z" itemprop="datePublished">2019-06-16</time>
+	<a href="/2019/06/16/JSON-配置文件的缺点/" class="article-date">
+	  <time datetime="2019-06-16T05:11:46.000Z" itemprop="datePublished">2019-06-16</time>
 	</a>
 </span>
         
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/翻译/">翻译</a>
+  </span>
+
         
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/JSON/">JSON</a>
+  </span>
+
 
         
 
-        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/404.html#comments" class="article-comment-link">Comments</a></span>
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2019/06/16/JSON-配置文件的缺点/#comments" class="article-comment-link">Comments</a></span>
         
       </div>
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <!-- <script type="text/javascript" src="//www.qq.com/404/search_children.js" charset="utf-8" homePageUrl="<%- config.url %>" homePageName="回到我的主页"></script> -->
+        <blockquote>
+<p>原文链接：<a href="https://arp242.net/json-config.html" target="_blank" rel="noopener">The downsides of JSON for config files</a></p>
+</blockquote>
+<p>我近期目睹了使用 JSON 作为配置文件的趋势，我认为这不是一个好主意。</p>
+<p>这不是 JSON 的设计目的，因此它不擅长做这件事。JSON 旨在成为一种“轻量数据交换格式”，并声称其“易于人类读写”和“易于机器解析和生成”。</p>
+<p>作为一种数据交换格式，JSON 相当不错。人类可以相对容易地读写它，而且机器解析起来也很容易（尽管存在<a href="http://seriot.ch/parsing_json.php" target="_blank" rel="noopener">一些问题</a>）。</p>
+<p>这是一个良好的在机器可读和人类可读之间的权衡，对于许多用例来说，这是对 XML 的一个很好的改进。</p>
+<p>将其用于其它目的有些类似于：“嘿，这把锤子非常适合用来钉钉子！我很中意它！为什么不用它来敲这颗螺丝呢！”。当然，这么做也可以，但它不是正确的工具。</p>
+<hr>
+<p>截止到目前，最大的问题是你无法添加注释。少数 JSON 解析器可以，但大多数都不支持，它也不在标准中。有充分的理由关于<a href="https://web.archive.org/web/20120506232618/https://plus.google.com/118095276221607585885/posts/RK8qyGVaGSr" target="_blank" rel="noopener">明确从 JSON 中移除</a>注释。</p>
+<p>你想要添加注释的原因有很多：记录为什么设置成该值，添加助记符或描述警告，警告过去的配置错误，在其中保留一个基本的更改日志，或者单纯是为了在调试时注释掉某个段落或值。</p>
+<p>一个<a href="http://stackoverflow.com/a/244858/660921" target="_blank" rel="noopener">变通方法</a>是添加一个新的键（如 <code>{&quot;__comment&quot;: &quot;a comment&quot;, &quot;actual_data&quot;: &quot;...&quot;}</code>，但我觉得这实在是太难看了)。</p>
+<p>你也可以使用提交日志，但是谁会在提交历史中不大可能隐藏一些重要信息的情况下去仔细阅读它呢？</p>
+<p>一些 JSON 方言例如 JSON5，Hjson 和 HOCON 添加了对注释的支持，一些 JSON 解析器也是如此。这很好，我也鼓励你去使用它，但这不再是 JSON 了，而是 JSON 方言。这篇文章是关于 JSON 的，不是它的方言。</p>
+<hr>
+<p>我还发现在手动编辑 JSON 时的体验很不理想，你需要频繁的追加逗号，引号的语义非常烦人，而且它缺乏使用多行字符串的能力。这些属性适用于 JSON 的预期用途，但不太适合编写配置文件。它可行吗？当然。有趣吗？不。</p>
+<p>我也没觉得它特别易读，因为它包含过多的引号和其它语法噪音。我坦率承认这可能是我的品位问题。</p>
+<hr>
+<p>JSON 是一种声明性配置语言。声明性配置（DC）适用于某些问题，但其它问题就不那么适用了。尤其是使用 DC 来控制逻辑，通常不是个好主意。</p>
+<p>促使我写这篇文章的是 MediaWiki 的新扩展系统，旧系统使用一个简单的 PHP 文件来连接核心 MediaWiki 代码，加载所需依赖等。这些在新系统中被一个 JSON 文件替换。丧失了巧妙解决与其它插件或逻辑的兼容问题的能力。</p>
+<p>它实现起来也很复杂，以前只需要 <code>require(&#39;plugin/foo/plugin.php&#39;);</code>，现在它需要解析一个 JSON 文件，并根据其内容做些什么。这要复杂得多，因此也<a href="https://arp242.net/easy.html" target="_blank" rel="noopener">难以测试</a>。</p>
+<p>而使用 JSON 文件存储基本的元数据是有意义的（更容易在网站上解析和显示），用它来描述代码的工作方式对于我来说是对 DC 的滥用。毕竟这是代码的活儿。</p>
+<hr>
+<p>很多人向我征求关于使用什么的建议。这不是个容易回答的问题，因为它取决于你的用例，编程语言，库环境和社会因素。没有单一的“正确答案”，也许只有“最简单的，满足你所有需求”的答案。事实上我写了<a href="https://arp242.net/negative-argument.html" target="_blank" rel="noopener">一篇关于这一点的文章</a>。</p>
+<p>一个很好的选项可能是只<a href="https://arp242.net/flags-config.html" target="_blank" rel="noopener">使用命令行标志</a>。</p>
+<p>有一些 JSON 方言专为人类编写而设计：<a href="https://json5.org/" target="_blank" rel="noopener">JSON5</a>，<a href="http://hjson.org/" target="_blank" rel="noopener">Hjson</a> 和 <a href="https://github.com/lightbend/config/blob/master/HOCON.md" target="_blank" rel="noopener">HOCON</a>。所有这些似乎都是对标准 JSON 的合理改进，尽管我没有用过它们中的任何一个。特别是 JSON5 似乎是个不错的选项，因为它对 JSON 的改动最少。</p>
+<p>我不愿提供其它选项，因为我没有对所有格式（ <a href="https://arp242.net/yaml-config.html" target="_blank" rel="noopener">YAML</a> 除外）进行深入评估；只是看看规范可能无法找出潜在的缺点（ YAML 就是个很好的例子，它有很多微妙的行为）。我确实没有时间或是兴趣去对所有选项做全面深入的审查。</p>
 
       
     </div>
@@ -286,7 +326,7 @@
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://blog.sdjdd.com//404.html" title="404 Not Found：该页无法显示" target="_blank" rel="external">https://blog.sdjdd.com//404.html</a>
+      <a href="https://blog.sdjdd.com/2019/06/16/JSON-配置文件的缺点/" title="JSON 配置文件的缺点" target="_blank" rel="external">https://blog.sdjdd.com/2019/06/16/JSON-配置文件的缺点/</a>
     </li>
     
     <li class="post-copyright-license">
@@ -317,6 +357,12 @@
   </article>
   
     
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
 
   
 </div>
@@ -386,6 +432,37 @@ window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
 
 
 
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: '',
+    appKey: '',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
 
 
 
