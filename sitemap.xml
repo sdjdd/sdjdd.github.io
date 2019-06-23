@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://blog.sdjdd.com/2019/06/22/%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%91%E4%BB%AC%E6%94%B9%E7%94%A8-gRPC/</loc>
+    
+    <lastmod>2019-06-23T12:10:32.487Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.sdjdd.com/2019/06/16/JSON-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E7%BC%BA%E7%82%B9/</loc>
     
     <lastmod>2019-06-16T16:53:59.849Z</lastmod>
@@ -30,14 +37,14 @@
   </url>
   
   <url>
-    <loc>https://blog.sdjdd.com/categories/index.html</loc>
+    <loc>https://blog.sdjdd.com/links/index.html</loc>
     
     <lastmod>2019-06-15T16:52:23.957Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.sdjdd.com/links/index.html</loc>
+    <loc>https://blog.sdjdd.com/categories/index.html</loc>
     
     <lastmod>2019-06-15T16:52:23.957Z</lastmod>
     
