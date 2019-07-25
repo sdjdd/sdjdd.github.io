@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>Dockerfile最佳实践 | sdjdd&#39;s blog</title>
+  <meta name="description" content="原文链接：Intro Guide to Dockerfile Best Practices  如今，GitHub 上有超过一百万个 Dockerfiles，但并非所有 Dockerfiles 都是按照相同的方式创建的。效率是关重要，这系列文章将覆盖 Dockerfile 最佳实践的五个方面，帮助你编写更好的 Dockerfile ：优化构建时间、镜像大小、可维护性、安全性和复用性。如果你是 Do">
+<meta name="keywords" content="Docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dockerfile最佳实践">
+<meta property="og:url" content="https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="原文链接：Intro Guide to Dockerfile Best Practices  如今，GitHub 上有超过一百万个 Dockerfiles，但并非所有 Dockerfiles 都是按照相同的方式创建的。效率是关重要，这系列文章将覆盖 Dockerfile 最佳实践的五个方面，帮助你编写更好的 Dockerfile ：优化构建时间、镜像大小、可维护性、安全性和复用性。如果你是 Do">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/tip1.webp">
+<meta property="og:image" content="https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/tip2.webp">
+<meta property="og:image" content="https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/tip3.webp">
+<meta property="og:image" content="https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/tip4.webp">
+<meta property="og:image" content="https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/tip5.webp">
+<meta property="og:image" content="https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/tip6.webp">
+<meta property="og:image" content="https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/tip7.webp">
+<meta property="og:image" content="https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/tip8.webp">
+<meta property="og:image" content="https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/tip9.webp">
+<meta property="og:image" content="https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/tip10.webp">
+<meta property="og:image" content="https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/tip11-1.webp">
+<meta property="og:image" content="https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/tip11-2.webp">
+<meta property="og:updated_time" content="2019-07-25T03:52:37.733Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Dockerfile最佳实践">
+<meta name="twitter:description" content="原文链接：Intro Guide to Dockerfile Best Practices  如今，GitHub 上有超过一百万个 Dockerfiles，但并非所有 Dockerfiles 都是按照相同的方式创建的。效率是关重要，这系列文章将覆盖 Dockerfile 最佳实践的五个方面，帮助你编写更好的 Dockerfile ：优化构建时间、镜像大小、可维护性、安全性和复用性。如果你是 Do">
+<meta name="twitter:image" content="https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/tip1.webp">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/sdjdd" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">sdjdd</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Form &amp; CRUD Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijng, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">Tags</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">About</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/sdjdd" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">Board</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/翻译/">翻译</a><span class="category-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JSON/">JSON</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gRPC/">gRPC</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Docker/" style="font-size: 13px;">Docker</a> <a href="/tags/JSON/" style="font-size: 13px;">JSON</a> <a href="/tags/gRPC/" style="font-size: 13px;">gRPC</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Archive</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/翻译/">翻译</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/07/21/Dockerfile最佳实践/" class="title">Dockerfile最佳实践</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-07-21T08:24:59.000Z" itemprop="datePublished">2019-07-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/翻译/">翻译</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/06/30/我不想成为一个全栈开发者/" class="title">我不想成为一个全栈开发者</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-06-30T04:32:04.000Z" itemprop="datePublished">2019-06-30</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/翻译/">翻译</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/06/22/为什么我们改用-gRPC/" class="title">为什么我们改用 gRPC</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-06-22T08:34:38.000Z" itemprop="datePublished">2019-06-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/翻译/">翻译</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/06/16/JSON-配置文件的缺点/" class="title">JSON 配置文件的缺点</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-06-16T05:11:46.000Z" itemprop="datePublished">2019-06-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Dockerfile最佳实践" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Dockerfile最佳实践
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2019/07/21/Dockerfile最佳实践/" class="article-date">
+	  <time datetime="2019-07-21T08:24:59.000Z" itemprop="datePublished">2019-07-21</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/翻译/">翻译</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/Docker/">Docker</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2019/07/21/Dockerfile最佳实践/#comments" class="article-comment-link">Comments</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <blockquote>
+<p>原文链接：<a href="https://blog.docker.com/2019/07/intro-guide-to-dockerfile-best-practices/" target="_blank" rel="noopener">Intro Guide to Dockerfile Best Practices</a></p>
+</blockquote>
+<p>如今，GitHub 上有超过一百万个 <a href="https://docs.docker.com/engine/reference/builder/" target="_blank" rel="noopener">Dockerfiles</a>，但并非所有 Dockerfiles 都是按照相同的方式创建的。效率是关重要，这系列文章将覆盖 Dockerfile 最佳实践的五个方面，帮助你编写更好的 Dockerfile ：优化构建时间、镜像大小、可维护性、安全性和复用性。如果你是 Docker 新手，这第一篇文章就是为你准备的！下一篇文章将涵盖更多高级内容。</p>
+<blockquote>
+<p>重要提示：下列 Dockerfiles 要构建一个基于 Maven 的 Java 示例，我们将不断改进它。因此，最后一个 Dockerfile 是推荐的写法，而所有中间的文件只是为了说明特定的最佳实践。</p>
+</blockquote>
+<h2 id="优化构建时间"><a href="#优化构建时间" class="headerlink" title="优化构建时间"></a>优化构建时间</h2><p>在开发周期中，构建 Docker 镜像，修改代码，然后重新构建时，利用缓存非常重要。缓存有助于避免运行不必要的构建步骤。</p>
+<h3 id="提示1：缓存的顺序很重要"><a href="#提示1：缓存的顺序很重要" class="headerlink" title="提示1：缓存的顺序很重要"></a>提示1：缓存的顺序很重要</h3><p><img src="tip1.webp" alt></p>
+<p>构建步骤（ Dockerfile 指令）的顺序很重要，因为当一个步骤的缓存因更改文件或修改 Dockerfile 中的行失效时，其缓存的后续步骤将中断。按照更改的频率从小到大排序你的步骤，以此优化缓存。</p>
+<h3 id="提示2：更明确的-COPY-减少缓存崩溃"><a href="#提示2：更明确的-COPY-减少缓存崩溃" class="headerlink" title="提示2：更明确的 COPY 减少缓存崩溃"></a>提示2：更明确的 COPY 减少缓存崩溃</h3><p><img src="tip2.webp" alt></p>
+<p>只复制所需内容。如果可能的话，避免“COPY”。当把文件复制到镜像中时，确保你对要复制的内容十分明确。对被复制的文件的任何更改都会破坏缓存。在上面的例子中，只有预构建的 jar 应用需要被复制到镜像中，所以只复制它。这样对不相关文件的更改不会影响到缓存。</p>
+<h3 id="提示3：关联可缓存单元，例如-apt-get-update-amp-install"><a href="#提示3：关联可缓存单元，例如-apt-get-update-amp-install" class="headerlink" title="提示3：关联可缓存单元，例如 apt-get update &amp; install"></a>提示3：关联可缓存单元，例如 apt-get update &amp; install</h3><p><img src="tip3.webp" alt></p>
+<p>每个 RUN 指令都可以看作是一个可缓存的单元，过多的 RUN 指令是不必要的，而将所有的命令链接到一个 RUN 指令中很容易破坏缓存，从而影响开发周期。当从包管理器安装包时，你总是希望把更新索引和安装包放在一个 RUN 命令里：它们组成了一个可缓存单元。否则就会有安装过期包的风险。</p>
+<h2 id="减小镜像大小"><a href="#减小镜像大小" class="headerlink" title="减小镜像大小"></a>减小镜像大小</h2><p>镜像大小很重要，因为较小的镜像意味着更快的部署和较小的攻击面。</p>
+<h3 id="提示4：移除不必要的依赖"><a href="#提示4：移除不必要的依赖" class="headerlink" title="提示4：移除不必要的依赖"></a>提示4：移除不必要的依赖</h3><p><img src="tip4.webp" alt></p>
+<p>移除不必要的依赖项，不要安装调试工具。如果确实需要调试工具，可以稍后安装。某些包管理器（如 apt ）会自动安装用户指定包的推荐版本，从而占用不必要空间。Apt 有 <code>-no-install-recommends</code> 标志，可以确保不安装实际不需要的依赖项。如果确实需要，请明确添加。</p>
+<h3 id="提示5：移除包管理器缓存"><a href="#提示5：移除包管理器缓存" class="headerlink" title="提示5：移除包管理器缓存"></a>提示5：移除包管理器缓存</h3><p><img src="tip5.webp" alt></p>
+<p>包管理器有自己的缓存，可能会保留到镜像中。处理此问题的一种方法是在安装包的 RUN 指令中将其移除。在另一条 RUN 指令中移除并不会减小镜像大小。</p>
+<p>还有其他方法可以减小镜像大小，比如文末介绍的多阶段构建。下一组最佳实践将着眼于如何优化 Dockerfile 的可维护性、安全性和可复用性。</p>
+<h2 id="可维护性"><a href="#可维护性" class="headerlink" title="可维护性"></a>可维护性</h2><h3 id="提示6：尽可能使用官方镜像"><a href="#提示6：尽可能使用官方镜像" class="headerlink" title="提示6：尽可能使用官方镜像"></a>提示6：尽可能使用官方镜像</h3><p><img src="tip6.webp" alt></p>
+<p>官方镜像可以节省大量维护时间，因为所有安装步骤都已完成且应用了最佳实践。如果你有多个项目，它们可以共享这些层，因为它们使用完全相同的基础镜像。</p>
+<h3 id="提示7：使用更具体的标签"><a href="#提示7：使用更具体的标签" class="headerlink" title="提示7：使用更具体的标签"></a>提示7：使用更具体的标签</h3><p><img src="tip7.webp" alt></p>
+<p>不要使用 <code>latest</code> 标签，它的便利之处在于：官方镜像总是能够在 Docker Hub 上使用。但随着时间的推移，可能会出现破坏性的更改。根据不使用缓存重新构建 Dockerfile 的时间间隔，构建可能失败。</p>
+<p>相反，应该对基本镜像使用更具体的标签。在本例中，我们使用 openjdk 。还有很多可用的标签，查看 <a href="https://hub.docker.com/_/openjdk" target="_blank" rel="noopener">Docker Hub 文档</a>，其中列出了该镜像的所有不同版本。</p>
+<h3 id="提示8：寻找最小版本"><a href="#提示8：寻找最小版本" class="headerlink" title="提示8：寻找最小版本"></a>提示8：寻找最小版本</h3><p><img src="tip8.webp" alt></p>
+<p>这些标签中有最小版本意味着其镜像也会更小。slim 版本基于一个简化的 Debian ，而 alpine 版本基于更小的 Alpine Linux 发行版镜像。一个显著的区别是，debian 仍然使用 GUN libc 而 alpine 使用 musl libc ，尽管后者要小得多，但在某些情况下可能导致兼容性问题。对于 openjdk ，jre 版本只包含 java 运行时，而不包含 sdk ；这也大大降低了镜像大小。</p>
+<h2 id="再生性"><a href="#再生性" class="headerlink" title="再生性"></a>再生性</h2><p>到目前为止，上面的 Dockerfiles 都是假定您的 jar 包是在宿主机上构建的。这并不理想，因为你失去了容器提供的一致性环境的好处。例如，如果你的 Java 应用依赖于特定的库，那么由于构建应用的计算机不同，可能会带来不一致性。</p>
+<h3 id="提示9：在一致的环境中构建"><a href="#提示9：在一致的环境中构建" class="headerlink" title="提示9：在一致的环境中构建"></a>提示9：在一致的环境中构建</h3><p>源代码是你想构建的 Docker 镜像的真实来源。Dockerfile 只是一个蓝图。</p>
+<p><img src="tip9.webp" alt></p>
+<p>你应该首先确定所构建应用的全部所需内容。我们的 Java 应用需要 Maven 和 JDK ，所以我们基于 Docker Hub 中的一个特定的最小官方 Maven 镜像编写 Dockerfile ，该镜像包括 JDK 。如果需要更多的依赖项，可以在 RUN 步骤安装。</p>
+<p>pom.xml 和 src 目录将被复制，它们是最终生成 app.jar 的 RUN 步骤所必需的。（ -e 标志显示错误，-B 标志以被称为 “batch” 的非交互模式运行）。</p>
+<p>我们解决了环境不一致的问题，但引入了另一个问题：每次更改代码时，都会获取 pom.xml 中的所有依赖项。请看下一个提示。</p>
+<h3 id="提示10：在单独的步骤中获取依赖"><a href="#提示10：在单独的步骤中获取依赖" class="headerlink" title="提示10：在单独的步骤中获取依赖"></a>提示10：在单独的步骤中获取依赖</h3><p><img src="tip10.webp" alt></p>
+<p>还记得“可缓存单元”吗，我们可以把获取依赖项放在单独的可缓存单元中，只需要在 pom.xml 而不是源代码的更改时重新获取。两个 COPY 步骤之间的 RUN 步骤告诉Maven只获取依赖项。</p>
+<p>在一致的环境中构建还引入了另外一个问题：我们的镜像比之前更大了，因为它包含运行时不需要的构建时依赖项。</p>
+<h3 id="提示11：使用多阶段构建来删除构建依赖（推荐的-Dockerfile）"><a href="#提示11：使用多阶段构建来删除构建依赖（推荐的-Dockerfile）" class="headerlink" title="提示11：使用多阶段构建来删除构建依赖（推荐的 Dockerfile）"></a>提示11：使用多阶段构建来删除构建依赖（推荐的 Dockerfile）</h3><p><img src="tip11-1.webp" alt></p>
+<p>多阶段构建的标志是使用多个 FROM 语句。每个 FROM 开启一个新的阶段。可以用 AS 关键字命名，我们用它来将第一阶段命名为 “builder”，便于稍后引用。它将在一致的环境中包含所有构建依赖项。</p>
+<p>第二阶段是我们的最终阶段，将产生最终镜像。它将严格满足运行时的要求，在本例中是基于Alpine 的最小 JRE（Java运行时）。中间阶段 builder 将被缓存但不会出现在最终镜像中。为了在最终镜像中生成构件，请使用 <code>COPY --from=STAGE_NAME</code> 。在本例中，STAGE_NAME 是 builder。</p>
+<p><img src="tip11-2.webp" alt></p>
+<p>多阶段构建是消除构建时依赖性的首选解决方案。</p>
+<p>我们经历了从不一致地构件臃肿的镜像到在一致环境中构建缓存友好的最小镜像。在下一篇博客文章中，我们将更多地介绍多阶段构建的其他用途。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/" title="Dockerfile最佳实践" target="_blank" rel="external">https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/sdjdd" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/sdjdd" target="_blank"><span class="text-dark">sdjdd</span><small class="ml-1x">Form &amp; CRUD Developer</small></a></h3>
+        <div>Just for fun。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="/2019/06/30/我不想成为一个全栈开发者/" title="我不想成为一个全栈开发者"><span>Older&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/sdjdd" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2019 sdjdd
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: '',
+    appKey: '',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

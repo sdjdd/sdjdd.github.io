@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://blog.sdjdd.com/"/>
-  <updated>2019-06-30T09:04:05.842Z</updated>
+  <updated>2019-07-25T03:52:37.733Z</updated>
   <id>https://blog.sdjdd.com/</id>
   
   <author>
@@ -17,11 +17,37 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Dockerfile最佳实践</title>
+    <link href="https://blog.sdjdd.com/2019/07/21/Dockerfile%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/"/>
+    <id>https://blog.sdjdd.com/2019/07/21/Dockerfile最佳实践/</id>
+    <published>2019-07-21T08:24:59.000Z</published>
+    <updated>2019-07-25T03:52:37.733Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>原文链接：<a href="https://blog.docker.com/2019/07/intro-guide-to-dockerfile-best-practices/" target="_blank" rel="noopener">Intro Guide to Dockerfile Best Practices</a></p></blockquote><p>如今，GitHub 上有超过一百万个 <a href="https://docs.docker.com/engine/reference/builder/" target="_blank" rel="noopener">Dockerfiles</a>，但并非所有 Dockerfiles 都是按照相同的方式创建的。效率是关重要，这系列文章将覆盖 Dockerfile 最佳实践的五个方面，帮助你编写更好的 Dockerfile ：优化构建时间、镜像大小、可维护性、安全性和复用性。如果你是 Docker 新手，这第一篇文章就是为你准备的！下一篇文章将涵盖更多高级内容。</p><blockquote><p>重要提示：下列 Dockerfiles 要构建一个基于 Maven 的 Java 示例，我们将不断改进它。因此，最后一个 Dockerfile 是推荐的写法，而所有中间的文件只是为了说明特定的最佳实践。</p></blockquote><h2 id="优化构建时间"><a href="#优化构建时间" class="headerlink" title="优化构建时间"></a>优化构建时间</h2><p>在开发周期中，构建 Docker 镜像，修改代码，然后重新构建时，利用缓存非常重要。缓存有助于避免运行不必要的构建步骤。</p><h3 id="提示1：缓存的顺序很重要"><a href="#提示1：缓存的顺序很重要" class="headerlink" title="提示1：缓存的顺序很重要"></a>提示1：缓存的顺序很重要</h3><p><img src="tip1.webp" alt></p><p>构建步骤（ Dockerfile 指令）的顺序很重要，因为当一个步骤的缓存因更改文件或修改 Dockerfile 中的行失效时，其缓存的后续步骤将中断。按照更改的频率从小到大排序你的步骤，以此优化缓存。</p><h3 id="提示2：更明确的-COPY-减少缓存崩溃"><a href="#提示2：更明确的-COPY-减少缓存崩溃" class="headerlink" title="提示2：更明确的 COPY 减少缓存崩溃"></a>提示2：更明确的 COPY 减少缓存崩溃</h3><p><img src="tip2.webp" alt></p><p>只复制所需内容。如果可能的话，避免“COPY”。当把文件复制到镜像中时，确保你对要复制的内容十分明确。对被复制的文件的任何更改都会破坏缓存。在上面的例子中，只有预构建的 jar 应用需要被复制到镜像中，所以只复制它。这样对不相关文件的更改不会影响到缓存。</p><h3 id="提示3：关联可缓存单元，例如-apt-get-update-amp-install"><a href="#提示3：关联可缓存单元，例如-apt-get-update-amp-install" class="headerlink" title="提示3：关联可缓存单元，例如 apt-get update &amp; install"></a>提示3：关联可缓存单元，例如 apt-get update &amp; install</h3><p><img src="tip3.webp" alt></p><p>每个 RUN 指令都可以看作是一个可缓存的单元，过多的 RUN 指令是不必要的，而将所有的命令链接到一个 RUN 指令中很容易破坏缓存，从而影响开发周期。当从包管理器安装包时，你总是希望把更新索引和安装包放在一个 RUN 命令里：它们组成了一个可缓存单元。否则就会有安装过期包的风险。</p><h2 id="减小镜像大小"><a href="#减小镜像大小" class="headerlink" title="减小镜像大小"></a>减小镜像大小</h2><p>镜像大小很重要，因为较小的镜像意味着更快的部署和较小的攻击面。</p><h3 id="提示4：移除不必要的依赖"><a href="#提示4：移除不必要的依赖" class="headerlink" title="提示4：移除不必要的依赖"></a>提示4：移除不必要的依赖</h3><p><img src="tip4.webp" alt></p><p>移除不必要的依赖项，不要安装调试工具。如果确实需要调试工具，可以稍后安装。某些包管理器（如 apt ）会自动安装用户指定包的推荐版本，从而占用不必要空间。Apt 有 <code>-no-install-recommends</code> 标志，可以确保不安装实际不需要的依赖项。如果确实需要，请明确添加。</p><h3 id="提示5：移除包管理器缓存"><a href="#提示5：移除包管理器缓存" class="headerlink" title="提示5：移除包管理器缓存"></a>提示5：移除包管理器缓存</h3><p><img src="tip5.webp" alt></p><p>包管理器有自己的缓存，可能会保留到镜像中。处理此问题的一种方法是在安装包的 RUN 指令中将其移除。在另一条 RUN 指令中移除并不会减小镜像大小。</p><p>还有其他方法可以减小镜像大小，比如文末介绍的多阶段构建。下一组最佳实践将着眼于如何优化 Dockerfile 的可维护性、安全性和可复用性。</p><h2 id="可维护性"><a href="#可维护性" class="headerlink" title="可维护性"></a>可维护性</h2><h3 id="提示6：尽可能使用官方镜像"><a href="#提示6：尽可能使用官方镜像" class="headerlink" title="提示6：尽可能使用官方镜像"></a>提示6：尽可能使用官方镜像</h3><p><img src="tip6.webp" alt></p><p>官方镜像可以节省大量维护时间，因为所有安装步骤都已完成且应用了最佳实践。如果你有多个项目，它们可以共享这些层，因为它们使用完全相同的基础镜像。</p><h3 id="提示7：使用更具体的标签"><a href="#提示7：使用更具体的标签" class="headerlink" title="提示7：使用更具体的标签"></a>提示7：使用更具体的标签</h3><p><img src="tip7.webp" alt></p><p>不要使用 <code>latest</code> 标签，它的便利之处在于：官方镜像总是能够在 Docker Hub 上使用。但随着时间的推移，可能会出现破坏性的更改。根据不使用缓存重新构建 Dockerfile 的时间间隔，构建可能失败。</p><p>相反，应该对基本镜像使用更具体的标签。在本例中，我们使用 openjdk 。还有很多可用的标签，查看 <a href="https://hub.docker.com/_/openjdk" target="_blank" rel="noopener">Docker Hub 文档</a>，其中列出了该镜像的所有不同版本。</p><h3 id="提示8：寻找最小版本"><a href="#提示8：寻找最小版本" class="headerlink" title="提示8：寻找最小版本"></a>提示8：寻找最小版本</h3><p><img src="tip8.webp" alt></p><p>这些标签中有最小版本意味着其镜像也会更小。slim 版本基于一个简化的 Debian ，而 alpine 版本基于更小的 Alpine Linux 发行版镜像。一个显著的区别是，debian 仍然使用 GUN libc 而 alpine 使用 musl libc ，尽管后者要小得多，但在某些情况下可能导致兼容性问题。对于 openjdk ，jre 版本只包含 java 运行时，而不包含 sdk ；这也大大降低了镜像大小。</p><h2 id="再生性"><a href="#再生性" class="headerlink" title="再生性"></a>再生性</h2><p>到目前为止，上面的 Dockerfiles 都是假定您的 jar 包是在宿主机上构建的。这并不理想，因为你失去了容器提供的一致性环境的好处。例如，如果你的 Java 应用依赖于特定的库，那么由于构建应用的计算机不同，可能会带来不一致性。</p><h3 id="提示9：在一致的环境中构建"><a href="#提示9：在一致的环境中构建" class="headerlink" title="提示9：在一致的环境中构建"></a>提示9：在一致的环境中构建</h3><p>源代码是你想构建的 Docker 镜像的真实来源。Dockerfile 只是一个蓝图。</p><p><img src="tip9.webp" alt></p><p>你应该首先确定所构建应用的全部所需内容。我们的 Java 应用需要 Maven 和 JDK ，所以我们基于 Docker Hub 中的一个特定的最小官方 Maven 镜像编写 Dockerfile ，该镜像包括 JDK 。如果需要更多的依赖项，可以在 RUN 步骤安装。</p><p>pom.xml 和 src 目录将被复制，它们是最终生成 app.jar 的 RUN 步骤所必需的。（ -e 标志显示错误，-B 标志以被称为 “batch” 的非交互模式运行）。</p><p>我们解决了环境不一致的问题，但引入了另一个问题：每次更改代码时，都会获取 pom.xml 中的所有依赖项。请看下一个提示。</p><h3 id="提示10：在单独的步骤中获取依赖"><a href="#提示10：在单独的步骤中获取依赖" class="headerlink" title="提示10：在单独的步骤中获取依赖"></a>提示10：在单独的步骤中获取依赖</h3><p><img src="tip10.webp" alt></p><p>还记得“可缓存单元”吗，我们可以把获取依赖项放在单独的可缓存单元中，只需要在 pom.xml 而不是源代码的更改时重新获取。两个 COPY 步骤之间的 RUN 步骤告诉Maven只获取依赖项。</p><p>在一致的环境中构建还引入了另外一个问题：我们的镜像比之前更大了，因为它包含运行时不需要的构建时依赖项。</p><h3 id="提示11：使用多阶段构建来删除构建依赖（推荐的-Dockerfile）"><a href="#提示11：使用多阶段构建来删除构建依赖（推荐的-Dockerfile）" class="headerlink" title="提示11：使用多阶段构建来删除构建依赖（推荐的 Dockerfile）"></a>提示11：使用多阶段构建来删除构建依赖（推荐的 Dockerfile）</h3><p><img src="tip11-1.webp" alt></p><p>多阶段构建的标志是使用多个 FROM 语句。每个 FROM 开启一个新的阶段。可以用 AS 关键字命名，我们用它来将第一阶段命名为 “builder”，便于稍后引用。它将在一致的环境中包含所有构建依赖项。</p><p>第二阶段是我们的最终阶段，将产生最终镜像。它将严格满足运行时的要求，在本例中是基于Alpine 的最小 JRE（Java运行时）。中间阶段 builder 将被缓存但不会出现在最终镜像中。为了在最终镜像中生成构件，请使用 <code>COPY --from=STAGE_NAME</code> 。在本例中，STAGE_NAME 是 builder。</p><p><img src="tip11-2.webp" alt></p><p>多阶段构建是消除构建时依赖性的首选解决方案。</p><p>我们经历了从不一致地构件臃肿的镜像到在一致环境中构建缓存友好的最小镜像。在下一篇博客文章中，我们将更多地介绍多阶段构建的其他用途。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;blockquote&gt;
+&lt;p&gt;原文链接：&lt;a href=&quot;https://blog.docker.com/2019/07/intro-guide-to-dockerfile-best-practices/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Intr
+      
+    
+    </summary>
+    
+      <category term="翻译" scheme="https://blog.sdjdd.com/categories/%E7%BF%BB%E8%AF%91/"/>
+    
+    
+      <category term="Docker" scheme="https://blog.sdjdd.com/tags/Docker/"/>
+    
+  </entry>
+  
+  <entry>
     <title>我不想成为一个全栈开发者</title>
     <link href="https://blog.sdjdd.com/2019/06/30/%E6%88%91%E4%B8%8D%E6%83%B3%E6%88%90%E4%B8%BA%E4%B8%80%E4%B8%AA%E5%85%A8%E6%A0%88%E5%BC%80%E5%8F%91%E8%80%85/"/>
     <id>https://blog.sdjdd.com/2019/06/30/我不想成为一个全栈开发者/</id>
     <published>2019-06-30T04:32:04.000Z</published>
-    <updated>2019-06-30T09:04:05.842Z</updated>
+    <updated>2019-07-21T08:57:17.731Z</updated>
     
     <content type="html"><![CDATA[<blockquote><p>原文链接：<a href="https://artur-martsinkovskyi.github.io//2019/i-dont-want-to-be-fullstack/" target="_blank" rel="noopener">I don’t want to be a full-fullstack developer</a><br>译注：我很同意这为乌克兰开发者的观点，但他的英文水平实在是一言难尽。</p></blockquote><p>我是一名 Ruby 开发者，一个全站 web 开发者。对此我深感疲惫，厌倦了有时负责商业分析和手册的质量保证。随着时间的推移，这个行业越来越多的依靠以开发人员为中心的工作流程，开发者们将越来越多的工作交由同一个人负责。</p><h2 id="很久以前的互联网"><a href="#很久以前的互联网" class="headerlink" title="很久以前的互联网"></a>很久以前的互联网</h2><p>很久以前就有 DBA ，但现在几乎看不到了。在 Indeed.com 中<a href="https://www.indeed.com/jobs?q=full+stack+web+developer&l=" target="_blank" rel="noopener">搜索</a> <em>全栈开发者</em> 会得到 7000 个结果，<em>web 开发者</em> 的搜索结果有 40000 个。用户体验工程师和前端开发者的角色也在工作内容基本一致的前提下慢慢融合。越来越多的代理机构开始寻找既能做前端也能做后端的人，既能参与业务需求开发也能编写单元测试和集成测试的人，希望他们无所不在，无所不能。</p><h2 id="削减成本"><a href="#削减成本" class="headerlink" title="削减成本"></a>削减成本</h2><p>乍一看，这似乎是个好主意，有人知道从开发到发布所需的一切，掌控整个过程。这对企业来说更加容易：你只需和一个人进行核对，开发过程不会因为“谁做什么”的问题而变得特别复杂。这么做还能降低成本，在质量和开发时间中作出一点权衡。沟通也变得更加顺畅了，和一个经历了整个开发流程的人交流要比沿着流程链挨个询问要容易得多。这听起来很不错，如果你不知道把这么多专业工作全都塞给一个人去做会发生什么的话。</p><h2 id="复杂性的回击"><a href="#复杂性的回击" class="headerlink" title="复杂性的回击"></a>复杂性的回击</h2><p>后端开发是个复杂的领域，包括理解网络层、服务器的整体工作方式、部署、AWS/Google/Azure 服务（它们对现代 web 应用至关重要）、编程语言和框架的细节，使用的协议、身份认证、数据库连接和配置等。前端包括过硬的 web 标准知识、浏览器间的差异、ES5、ES6、CSS、HTML、框架、预处理器、转换器、构建工具、UX、UI、浏览器角度的网络、浏览器存储，有时甚至包括 Flutter、Ionic 和 React Native 之类的移动端应用的细节。我不想讨论业务分析师和 QA 的角色，它们完全是不同的概念。</p><h2 id="宽度还是广度？"><a href="#宽度还是广度？" class="headerlink" title="宽度还是广度？"></a>宽度还是广度？</h2><p>别误会，我认为扩大知识领域并通过对周边技术的理解更好的完成所在部门的工作是件好事。但不论行业，让开发者直接负责代码质量、选择解决方案以及项目开发的未来规划未必是件好事。我们大脑的空间是有限的。我们可以用一个或少数几个领域的更深更好的知识来填充它，或是多个领域的肤浅的知识。后者制造了一种虚假的自信，从而导致选择糟糕的解决方案，造轮子、选错技术、用显微镜敲钉子。</p><h2 id="并非所有削减都是好的"><a href="#并非所有削减都是好的" class="headerlink" title="并非所有削减都是好的"></a>并非所有削减都是好的</h2><p>全栈很有趣，因为它似乎只存在于软件工程领域。其他领域大多都分工明确。你不会希望让牙医来治疗你的心脏，让神经外科医生来修复你的痔疮。它被用于软件工程似乎是由该领域的虚拟和故障安全特性。你的代码质量不会直接影响用户可见的结果，因此你在事情变糟之前有足够的时间处理（这种情况在你不在的时候常常出现）。此外，这个想法似乎对直观的金钱花销很有吸引力，雇佣拥有广泛技能（无论质量）的人可能看上去是在用同样的钱做更多的事。</p><p>我们得到的平庸的解决方案都是由那些在特定领域没有足够的专业知识，无法找出更好的方案的人提出的，他们粗略的知识中满是 Stackoverflow 的答案和复制粘贴来的东西。我们让那些不思进取的人不得不跟上太多主题，让那些专业人士无法创造出惊人的东西，因为他们没有足够的时间深究并创造出对该领域有价值的东西。在开发过程中不可避免的会遇到各种问题，导致 bug 和用户流失，影响开发成本，使我们以低廉的价格开发出不合格的产品。从短期经济角度来看，全栈可能是值得的，但它对整个行业和我们建设的项目都有害。</p>]]></content>
     
@@ -34,6 +60,8 @@
       
     
     </summary>
+    
+      <category term="翻译" scheme="https://blog.sdjdd.com/categories/%E7%BF%BB%E8%AF%91/"/>
     
     
   </entry>
